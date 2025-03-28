@@ -127,11 +127,14 @@ endif ()
 if (USE_GTEST)
     add_definitions( -DUSE_GTEST=TRUE )
 endif ()
-
+add_definitions(-DUSE_OPENGL=FALSE)
 
 # Directories
 # =============================================================================
 add_subdirectory(src)
+if (USE_GTEST)
 add_subdirectory(test)
-add_subdirectory(examples)
-add_subdirectory(doc)
+endif ()
+#add_subdirectory(examples)
+#add_subdirectory(doc)
+
