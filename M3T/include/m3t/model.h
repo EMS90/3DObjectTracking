@@ -115,11 +115,68 @@ class Model {
   bool SetUpRenderer(
       const std::shared_ptr<RendererGeometry> &renderer_geometry_ptr,
       const std::shared_ptr<Body> &focused_body_ptr,
-      std::shared_ptr<T> *renderer_ptr) const;
+      std::shared_ptr<T> *renderer_ptr) const {
+    // Calculate parameters
+    float maximum_body_diameter = focused_body_ptr->maximum_body_diameter();
+    float focal_length =
+        0.5f * float(image_size_ - kImageSizeSafetyBoundary) /
+        tanf(asinf(0.5f * maximum_body_diameter / sphere_radius_));
+    float principal_point = float(image_size_) / 2.0f;
+    Intrinsics intrinsics{focal_length,    focal_length, principal_point,
+                          principal_point, image_size_,  image_size_};
+    float z_min = sphere_radius_ - maximum_body_diameter * 0.5f;
+    float z_max = sphere_radius_ + maximum_body_diameter * 0.5f;
+    if (z_min < sphere_radius_ * kMinimumClipSpaceRatio) {
+      std::cerr << "z_min = " << z_min << " calculated for "
+                << focused_body_ptr->name()
+                << " is too small for model with sphere radius = "
+                << sphere_radius_ << "!\n";
+      return false;
+    }
+
+    // Set up renderer
+    if constexpr (std::is_base_of_v<FullSilhouetteRenderer,T>) {
+      *renderer_ptr = std::make_shared<T>("renderer", renderer_geometry_ptr,
+                                          Transform3fA::Identity(), intrinsics,
+                                          IDType::BODY, z_min, z_max);
+    } else {
+      *renderer_ptr = std::make_shared<T>("renderer", renderer_geometry_ptr,
+                                          Transform3fA::Identity(), intrinsics,
+                                          z_min, z_max);
+    }
+    return (*renderer_ptr)->SetUp();
+  }
   template <typename T>
-  bool AddBodiesToRenderer(const std::shared_ptr<T> &renderer_ptr,
-                           const std::vector<std::shared_ptr<Body>> &body_ptrs,
-                           uchar body_id = 0) const;
+  bool AddBodiesToRenderer(
+      const std::shared_ptr<T> &renderer_ptr,
+      const std::vector<std::shared_ptr<Body>> &body_ptrs,
+      uchar body_id) const {
+    auto renderer_geometry_ptr{renderer_ptr->renderer_geometry_ptr()};
+    for (auto &body_ptr : body_ptrs) {
+      // Calculate z_min and z_max
+      float z_min = sphere_radius_ - body_ptr->maximum_body_diameter() * 0.5f;
+      float z_max = sphere_radius_ + body_ptr->maximum_body_diameter() * 0.5f;
+      if (z_min < sphere_radius_ * kMinimumClipSpaceRatio) {
+        std::cerr << "z_min = " << z_min << " calculated for "
+                  << body_ptr->name()
+                  << " is too small for model with sphere radius = "
+                  << sphere_radius_ << "!\n";
+        return false;
+      }
+
+      // Add centered body to renderer geometry
+      auto copied_body_ptr{std::make_shared<Body>(*body_ptr)};
+      copied_body_ptr->set_body2world_pose(Transform3fA::Identity());
+      copied_body_ptr->set_body_id(body_id);
+      if (!renderer_geometry_ptr->AddBody(copied_body_ptr)) return false;
+
+      // Set clip space limits
+      renderer_ptr->set_z_min(std::min(z_min, renderer_ptr->z_min()));
+      renderer_ptr->set_z_max(std::max(z_max, renderer_ptr->z_max()));
+    }
+    return renderer_ptr->SetUp();
+  }
+
   static void RenderAndFetchNormalImage(
       const std::shared_ptr<FullNormalRenderer> &renderer_ptr,
       const Transform3fA &camera2world_pose, bool fetch_depth_image = false);

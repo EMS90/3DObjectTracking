@@ -165,7 +165,7 @@ bool DepthModel::GenerateModel() {
     std::shared_ptr<FullNormalRenderer> main_renderer_ptr;
     if (!SetUpRenderer(main_renderer_geometry_ptrs[omp_get_thread_num()],
                        body_ptr_, &main_renderer_ptr) ||
-        !AddBodiesToRenderer(main_renderer_ptr, {body_ptr_}))
+        !AddBodiesToRenderer(main_renderer_ptr, {body_ptr_}, kMainBodyID))
       cancel = true;
 
     std::shared_ptr<FullSilhouetteRenderer> occlusion_renderer_ptr{nullptr};

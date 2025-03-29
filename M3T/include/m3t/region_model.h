@@ -53,7 +53,7 @@ namespace m3t {
  * part of the same region as the main `body_ptr`.
  */
 class RegionModel : public Model {
- private:
+ protected:
   // Model definition
   static constexpr char kModelType = 'r';
   static constexpr int kVersionID = 10;
@@ -109,7 +109,7 @@ class RegionModel : public Model {
     float contour_length;
   };
 
- private:
+ protected:
   /**
    * \brief Struct that contains silhouette renderers to perform validation
    * checks or calculate foreground/background distances on contour points.
@@ -170,10 +170,10 @@ class RegionModel : public Model {
   const std::vector<std::shared_ptr<Body>> &movable_same_region_body_ptrs()
       const;
 
- private:
+ protected:
   // Helper methods for model set up
   bool LoadMetaData();
-  bool GenerateModel();
+  virtual bool GenerateModel();
   bool LoadModel();
   bool SaveModel() const;
 
@@ -237,6 +237,7 @@ class RegionModel : public Model {
   std::vector<std::shared_ptr<Body>> movable_same_region_body_ptrs_{};
 
   // Model data
+ protected:
   std::vector<View> views_;
   float max_contour_length_ = 0;
 };
