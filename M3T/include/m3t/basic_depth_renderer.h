@@ -96,10 +96,10 @@ class FullBasicDepthRenderer : public FullDepthRenderer {
   bool StartRendering() override;
   bool FetchDepthImage() override;
 
- private:
+protected:
   // Helper methods
   bool LoadMetaData();
-
+private:
   // Data
   BasicDepthRendererCore core_{};
 };
@@ -136,10 +136,10 @@ class FocusedBasicDepthRenderer : public FocusedDepthRenderer {
   bool StartRendering() override;
   bool FetchDepthImage() override;
 
- private:
+ public:
   // Helper methods
   bool LoadMetaData();
-
+private:
   // Data
   BasicDepthRendererCore core_{};
 };

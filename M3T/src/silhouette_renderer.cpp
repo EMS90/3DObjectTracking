@@ -223,7 +223,9 @@ FullSilhouetteRenderer::FullSilhouetteRenderer(
     const std::shared_ptr<Camera> &camera_ptr)
     : FullDepthRenderer{name, metafile_path, renderer_geometry_ptr,
                         camera_ptr} {}
-
+FullSilhouetteRenderer::~FullSilhouetteRenderer()
+{
+}
 bool FullSilhouetteRenderer::SetUp() {
   const std::lock_guard<std::mutex> lock{mutex_};
   set_up_ = false;
@@ -340,7 +342,9 @@ FocusedSilhouetteRenderer::FocusedSilhouetteRenderer(
     const std::shared_ptr<Camera> &camera_ptr)
     : FocusedDepthRenderer{name, metafile_path, renderer_geometry_ptr,
                            camera_ptr} {}
-
+FocusedSilhouetteRenderer::~FocusedSilhouetteRenderer()
+{
+}
 bool FocusedSilhouetteRenderer::SetUp() {
   const std::lock_guard<std::mutex> lock{mutex_};
   set_up_ = false;
