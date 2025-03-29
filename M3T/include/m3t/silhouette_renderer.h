@@ -107,23 +107,24 @@ class FullSilhouetteRenderer : public FullDepthRenderer {
 
   // Main methods
   bool StartRendering() override;
-  bool FetchSilhouetteImage();
+  virtual bool FetchSilhouetteImage();
   bool FetchDepthImage() override;
 
   // Getters
   IDType id_type() const;
-  const cv::Mat &silhouette_image() const;
+  virtual const cv::Mat &silhouette_image() const;
 
   // Getters that calculate values based on the rendered silhouette image
   uchar SilhouetteValue(const cv::Point2i &image_coordinate) const;
 
- private:
+ protected:
   // Helper methods
   bool LoadMetaData();
-  void ClearSilhouetteImage();
+  virtual void ClearSilhouetteImage();
 
   // Data
   IDType id_type_{};
+ private:
   cv::Mat silhouette_image_{};
   SilhouetteRendererCore core_{};
 };
@@ -168,7 +169,7 @@ class FocusedSilhouetteRenderer : public FocusedDepthRenderer {
 
   // Main methods
   bool StartRendering() override;
-  bool FetchSilhouetteImage();
+  virtual bool FetchSilhouetteImage();
   bool FetchDepthImage() override;
 
   // Getters
@@ -178,14 +179,14 @@ class FocusedSilhouetteRenderer : public FocusedDepthRenderer {
   // Getters that calculate values based on the rendered silhouette image
   uchar SilhouetteValue(const cv::Point2i &image_coordinate) const;
 
- private:
+ protected:
   // Helper methods
   bool LoadMetaData();
   void ClearSilhouetteImage();
-
   // Data
-  IDType id_type_{};
   cv::Mat focused_silhouette_image_{};
+  IDType id_type_{};
+ private:
   SilhouetteRendererCore core_{};
 };
 

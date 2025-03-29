@@ -61,10 +61,10 @@ class RendererGeometry {
   RendererGeometry(const RendererGeometry &) = delete;
   RendererGeometry &operator=(const RendererGeometry &) = delete;
   ~RendererGeometry();  // deletes glfw context
-  bool SetUp();         // creates glfw context
+  virtual bool SetUp();        
 
   // Configure bodies
-  bool AddBody(const std::shared_ptr<Body> &body_ptr);
+  virtual bool AddBody(const std::shared_ptr<Body> &body_ptr);
   bool DeleteBody(const std::string &name);
   void ClearBodies();
 
@@ -92,6 +92,8 @@ class RendererGeometry {
 
   // Variables
   std::string name_{};
+
+  protected:
   std::vector<std::shared_ptr<Body>> body_ptrs_;
 #if USE_OPENGL
   std::vector<RenderDataBody> render_data_bodies_;
