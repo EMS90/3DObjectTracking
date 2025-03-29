@@ -17,7 +17,7 @@
 #include <vector>
 
 namespace m3t {
-
+#if USE_OPENGL
 // General functions to create shader programs
 bool CreateShaderProgram(RendererGeometry *renderer_geometry,
                          const char *vertex_shader_code,
@@ -27,7 +27,7 @@ bool CreateShaderProgram(RendererGeometry *renderer_geometry,
                          const char *fragment_shader_code,
                          unsigned *shader_program);
 bool CheckCompileErrors(unsigned shader, const std::string &type);
-
+#endif
 /**
  * \brief Abstract class that defines a renderer as a single camera at a defined
  * location.

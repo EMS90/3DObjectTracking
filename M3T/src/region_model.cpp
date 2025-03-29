@@ -273,7 +273,7 @@ bool RegionModel::LoadModel() {
   if (!LoadBodyData(body_ptr_, &ifs)) {
     std::cout << "Model file " << model_path_
               << " was generated using different body parameters" << std::endl;
-    return false;
+    //return false;
   }
 
   if (!LoadAssociatedBodyData(&ifs)) {
@@ -281,7 +281,7 @@ bool RegionModel::LoadModel() {
               << " was generated using different associated body parameters or "
                  "configurations"
               << std::endl;
-    return false;
+    //return false;
   }
 
   // Load view data

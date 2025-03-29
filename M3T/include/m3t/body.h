@@ -50,7 +50,7 @@ class Body {
        float geometry_unit_in_meter, bool geometry_counterclockwise,
        bool geometry_enable_culling, const Transform3fA &geometry2body_pose);
   Body(const std::string &name, const std::filesystem::path &metafile_path);
-  bool SetUp();
+  bool SetUp(bool bLoadMesh = false);
 
   // Geometry setters
   void set_name(const std::string &name);
@@ -60,6 +60,7 @@ class Body {
   void set_geometry_counterclockwise(bool geometry_counterclockwise);
   void set_geometry_enable_culling(bool geometry_enable_culling);
   void set_geometry2body_pose(const Transform3fA &geometry2body_pose);
+  void set_maximum_body_diameter(float diameter);
 
   // ID setters
   void set_id(IDType id_type, uchar id);

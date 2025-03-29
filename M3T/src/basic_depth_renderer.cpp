@@ -2,10 +2,10 @@
 // Copyright (c) 2023 Manuel Stoiber, German Aerospace Center (DLR)
 
 #include <m3t/basic_depth_renderer.h>
-
+#if USE_OPENGL
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
+#endif
 namespace m3t {
 
 std::string BasicDepthRendererCore::vertex_shader_code_ =
@@ -28,7 +28,8 @@ bool BasicDepthRendererCore::SetUp(
   image_width_ = image_width;
   image_height_ = image_height;
   image_rendered_ = false;
-
+  
+  #if USE_OPENGL
   // Create shader program
   if (!initial_set_up_ &&
       !CreateShaderProgram(renderer_geometry_ptr_.get(),
@@ -38,6 +39,7 @@ bool BasicDepthRendererCore::SetUp(
   // Create buffer objects
   if (initial_set_up_) DeleteBufferObjects();
   CreateBufferObjects();
+  #endif
   initial_set_up_ = true;
   return true;
 }
@@ -45,6 +47,7 @@ bool BasicDepthRendererCore::SetUp(
 bool BasicDepthRendererCore::StartRendering(
     const Eigen::Matrix4f &projection_matrix,
     const Transform3fA &world2camera_pose) {
+  #if USE_OPENGL
   if (!initial_set_up_) return false;
   renderer_geometry_ptr_->MakeContextCurrent();
   glViewport(0, 0, image_width_, image_height_);
@@ -82,9 +85,14 @@ bool BasicDepthRendererCore::StartRendering(
   image_rendered_ = true;
   image_fetched_ = false;
   return true;
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  return false;
+  #endif
 }
 
 bool BasicDepthRendererCore::FetchDepthImage(cv::Mat *depth_image) {
+  #if USE_OPENGL
   if (!initial_set_up_ || !image_rendered_) return false;
   if (image_fetched_) return true;
   renderer_geometry_ptr_->MakeContextCurrent();
@@ -100,9 +108,14 @@ bool BasicDepthRendererCore::FetchDepthImage(cv::Mat *depth_image) {
   renderer_geometry_ptr_->DetachContext();
   image_fetched_ = true;
   return true;
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  return false;
+  #endif
 }
 
 void BasicDepthRendererCore::CreateBufferObjects() {
+  #if USE_OPENGL
   renderer_geometry_ptr_->MakeContextCurrent();
 
   // Initialize renderbuffer bodies_render_data
@@ -119,13 +132,20 @@ void BasicDepthRendererCore::CreateBufferObjects() {
                             GL_RENDERBUFFER, rbo_);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   renderer_geometry_ptr_->DetachContext();
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  #endif
 }
 
 void BasicDepthRendererCore::DeleteBufferObjects() {
+  #if USE_OPENGL
   renderer_geometry_ptr_->MakeContextCurrent();
   glDeleteRenderbuffers(1, &rbo_);
   glDeleteFramebuffers(1, &fbo_);
   renderer_geometry_ptr_->DetachContext();
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  #endif
 }
 
 FullBasicDepthRenderer::FullBasicDepthRenderer(

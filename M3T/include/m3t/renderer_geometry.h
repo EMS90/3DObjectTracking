@@ -4,8 +4,10 @@
 #ifndef M3T_INCLUDE_M3T_RENDERER_GEOMETRY_H_
 #define M3T_INCLUDE_M3T_RENDERER_GEOMETRY_H_
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#if USE_OPENGL
+  #include <GL/glew.h>
+  #include <GLFW/glfw3.h>
+#endif
 #include <m3t/body.h>
 #include <m3t/common.h>
 
@@ -45,12 +47,14 @@ class RendererGeometry {
 
  public:
   // Data Structs
+#if USE_OPENGL
   struct RenderDataBody {
     Body *body_ptr = nullptr;
     GLuint vao = 0;
     GLuint vbo = 0;
     unsigned n_vertices = 0;
   };
+#endif
 
   // Constructor, destructor, and setup method
   RendererGeometry(const std::string &name);
@@ -71,22 +75,28 @@ class RendererGeometry {
   // Getters
   const std::string &name() const;
   const std::vector<std::shared_ptr<Body>> &body_ptrs() const;
+#if USE_OPENGL
   const std::vector<RenderDataBody> &render_data_bodies() const;
+#endif
   bool set_up() const;
 
  private:
   // Helper methods
   static void AssembleVertexData(const Body &body,
                                  std::vector<float> *vertex_data);
+#if USE_OPENGL                               
   static void CreateGLVertexObjects(const std::vector<float> &vertices,
                                     RenderDataBody *render_data_body);
   static void DeleteGLVertexObjects(RenderDataBody *render_data_body);
+#endif
 
   // Variables
   std::string name_{};
   std::vector<std::shared_ptr<Body>> body_ptrs_;
+#if USE_OPENGL
   std::vector<RenderDataBody> render_data_bodies_;
   GLFWwindow *window_ = nullptr;  // Only used to hold a glfw context
+#endif
   std::mutex mutex_;
   bool initial_set_up_ = false;
   bool set_up_ = false;

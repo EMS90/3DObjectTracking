@@ -31,11 +31,15 @@ Body::Body(const std::string &name, const std::filesystem::path &metafile_path)
   region_id_ = body_id_;
 }
 
-bool Body::SetUp() {
+bool Body::SetUp(bool bloadMesh) {
   set_up_ = false;
   if (!metafile_path_.empty())
     if (!LoadMetaData()) return false;
-  if (!LoadMeshData()) return false;
+  if (bloadMesh) { // We are using the UE Asset directly, no need to load
+                     // mesh by default
+    if (!LoadMeshData())
+      return false;  
+  }
   if (!CalculateMaximumBodyDiameter()) return false;
   set_up_ = true;
   return true;
@@ -71,6 +75,9 @@ void Body::set_geometry2body_pose(const Transform3fA &geometry2body_pose) {
   geometry2world_pose_ = body2world_pose_ * geometry2body_pose_;
   world2geometry_pose_ = geometry2world_pose_.inverse();
   set_up_ = false;
+}
+void Body::set_maximum_body_diameter(float diameter) {
+  maximum_body_diameter_ = diameter;
 }
 
 void Body::set_id(IDType id_type, uchar id) {
@@ -242,6 +249,7 @@ bool Body::LoadMeshData() {
 }
 
 bool Body::CalculateMaximumBodyDiameter() {
+  if (maximum_body_diameter_ != 0) return true; //return if value was already set/calculated
   float max_radius = 0.0f;
   for (const auto &vertex : vertices_) {
     max_radius = std::max(max_radius, (geometry2body_pose_ * vertex).norm());

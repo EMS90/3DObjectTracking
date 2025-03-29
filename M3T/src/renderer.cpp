@@ -2,12 +2,12 @@
 // Copyright (c) 2023 Manuel Stoiber, German Aerospace Center (DLR)
 
 #include <m3t/renderer.h>
-
+#if USE_OPENGL
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
+#endif
 namespace m3t {
-
+#if USE_OPENGL
 bool CreateShaderProgram(RendererGeometry *renderer_geometry,
                          const char *vertex_shader_code,
                          unsigned int *shader_program) {
@@ -97,7 +97,7 @@ bool CheckCompileErrors(unsigned shader, const std::string &type) {
   }
   return true;
 }
-
+#endif
 void Renderer::set_name(const std::string &name) {
   const std::lock_guard<std::mutex> lock{mutex_};
   name_ = name;

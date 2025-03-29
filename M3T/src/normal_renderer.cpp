@@ -2,10 +2,10 @@
 // Copyright (c) 2023 Manuel Stoiber, German Aerospace Center (DLR)
 
 #include <m3t/normal_renderer.h>
-
+#if USE_OPENGL
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
+#endif
 namespace m3t {
 
 std::string NormalRendererCore::vertex_shader_code_ =
@@ -41,7 +41,7 @@ bool NormalRendererCore::SetUp(
   image_width_ = image_width;
   image_height_ = image_height;
   image_rendered_ = false;
-
+  #if USE_OPENGL
   // Create shader program
   if (!initial_set_up_ &&
       !CreateShaderProgram(renderer_geometry_ptr_.get(),
@@ -52,11 +52,13 @@ bool NormalRendererCore::SetUp(
   // Create buffer objects
   if (initial_set_up_) DeleteBufferObjects();
   CreateBufferObjects();
+  #endif
   initial_set_up_ = true;
   return true;
 }
 
 bool NormalRendererCore::StartRendering(
+  #if USE_OPENGL
     const Eigen::Matrix4f &projection_matrix,
     const Transform3fA &world2camera_pose) {
   if (!initial_set_up_) return false;
@@ -101,9 +103,14 @@ bool NormalRendererCore::StartRendering(
   normal_image_fetched_ = false;
   depth_image_fetched_ = false;
   return true;
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  return false;
+  #endif
 }
 
 bool NormalRendererCore::FetchNormalImage(cv::Mat *normal_image) {
+  #if USE_OPENGL
   if (!initial_set_up_ || !image_rendered_) return false;
   if (normal_image_fetched_) return true;
   renderer_geometry_ptr_->MakeContextCurrent();
@@ -119,9 +126,14 @@ bool NormalRendererCore::FetchNormalImage(cv::Mat *normal_image) {
   renderer_geometry_ptr_->DetachContext();
   normal_image_fetched_ = true;
   return true;
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  return false;
+  #endif
 }
 
 bool NormalRendererCore::FetchDepthImage(cv::Mat *depth_image) {
+  #if USE_OPENGL
   if (!initial_set_up_ || !image_rendered_) return false;
   if (depth_image_fetched_) return true;
   renderer_geometry_ptr_->MakeContextCurrent();
@@ -137,9 +149,14 @@ bool NormalRendererCore::FetchDepthImage(cv::Mat *depth_image) {
   renderer_geometry_ptr_->DetachContext();
   depth_image_fetched_ = true;
   return true;
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  return false;
+  #endif
 }
 
 void NormalRendererCore::CreateBufferObjects() {
+  #if USE_OPENGL
   renderer_geometry_ptr_->MakeContextCurrent();
 
   // Initialize renderbuffer bodies_render_data
@@ -163,14 +180,21 @@ void NormalRendererCore::CreateBufferObjects() {
                             GL_RENDERBUFFER, rbo_depth_);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   renderer_geometry_ptr_->DetachContext();
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  #endif
 }
 
 void NormalRendererCore::DeleteBufferObjects() {
+  #if USE_OPENGL
   renderer_geometry_ptr_->MakeContextCurrent();
   glDeleteRenderbuffers(1, &rbo_normal_);
   glDeleteRenderbuffers(1, &rbo_depth_);
   glDeleteFramebuffers(1, &fbo_);
   renderer_geometry_ptr_->DetachContext();
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  #endif
 }
 
 FullNormalRenderer::FullNormalRenderer(

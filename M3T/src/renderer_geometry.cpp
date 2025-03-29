@@ -10,6 +10,7 @@ int RendererGeometry::n_instances_ = 0;
 RendererGeometry::RendererGeometry(const std::string &name) : name_{name} {}
 
 RendererGeometry::~RendererGeometry() {
+  #if USE_OPENGL
   if (initial_set_up_) {
     glfwMakeContextCurrent(window_);
     for (auto &render_data_body : render_data_bodies_) {
@@ -21,6 +22,7 @@ RendererGeometry::~RendererGeometry() {
     n_instances_--;
     if (n_instances_ == 0) glfwTerminate();
   }
+  #endif
 }
 
 bool RendererGeometry::SetUp() {
@@ -35,7 +37,7 @@ bool RendererGeometry::SetUp() {
       return false;
     }
   }
-
+  #if USE_OPENGL
   // Set up GLFW
   if (!initial_set_up_) {
     if (!glfwInit()) {
@@ -84,7 +86,7 @@ bool RendererGeometry::SetUp() {
     CreateGLVertexObjects(vertex_data, &render_data_body);
   }
   glfwMakeContextCurrent(nullptr);
-
+  #endif
   set_up_ = true;
   return true;
 }
@@ -100,7 +102,7 @@ bool RendererGeometry::AddBody(const std::shared_ptr<Body> &body_ptr) {
       return false;
     }
   }
-
+  #if USE_OPENGL
   // Create data for body and assign parameters
   RenderDataBody render_data_body;
   render_data_body.body_ptr = body_ptr.get();
@@ -117,10 +119,13 @@ bool RendererGeometry::AddBody(const std::shared_ptr<Body> &body_ptr) {
   } else if (set_up_ && !body_ptr->set_up()) {
     set_up_ = false;
   }
+  #endif
 
   // Add body ptr and body data
   body_ptrs_.push_back(body_ptr);
+  #if USE_OPENGL
   render_data_bodies_.push_back(std::move(render_data_body));
+  #endif
   return true;
 }
 
@@ -129,12 +134,14 @@ bool RendererGeometry::DeleteBody(const std::string &name) {
   for (size_t i = 0; i < body_ptrs_.size(); ++i) {
     if (name == body_ptrs_[i]->name()) {
       body_ptrs_.erase(begin(body_ptrs_) + i);
+      #if USE_OPENGL
       if (set_up_) {
         glfwMakeContextCurrent(window_);
         DeleteGLVertexObjects(&render_data_bodies_[i]);
         glfwMakeContextCurrent(nullptr);
       }
       render_data_bodies_.erase(begin(render_data_bodies_) + i);
+      #endif
       return true;
     }
   }
@@ -144,6 +151,7 @@ bool RendererGeometry::DeleteBody(const std::string &name) {
 
 void RendererGeometry::ClearBodies() {
   const std::lock_guard<std::mutex> lock{mutex_};
+  #if USE_OPENGL
   if (set_up_) {
     glfwMakeContextCurrent(window_);
     for (auto &render_data_body : render_data_bodies_) {
@@ -152,6 +160,7 @@ void RendererGeometry::ClearBodies() {
     glfwMakeContextCurrent(nullptr);
   }
   render_data_bodies_.clear();
+  #endif
   body_ptrs_.clear();
 }
 
@@ -162,7 +171,9 @@ bool RendererGeometry::MakeContextCurrent() {
     mutex_.unlock();
     return false;
   }
+  #if USE_OPENGL
   glfwMakeContextCurrent(window_);
+  #endif
   return true;
 }
 
@@ -171,7 +182,9 @@ bool RendererGeometry::DetachContext() {
     std::cerr << "Set up renderer geometry " << name_ << " first" << std::endl;
     return false;
   }
+  #if USE_OPENGL
   glfwMakeContextCurrent(nullptr);
+  #endif
   mutex_.unlock();
   return true;
 }
@@ -181,11 +194,12 @@ const std::string &RendererGeometry::name() const { return name_; }
 const std::vector<std::shared_ptr<Body>> &RendererGeometry::body_ptrs() const {
   return body_ptrs_;
 }
-
+#if USE_OPENGL
 const std::vector<RendererGeometry::RenderDataBody>
     &RendererGeometry::render_data_bodies() const {
   return render_data_bodies_;
 }
+#endif
 
 bool RendererGeometry::set_up() const { return set_up_; }
 
@@ -205,7 +219,7 @@ void RendererGeometry::AssembleVertexData(const Body &body,
     }
   }
 }
-
+#if USE_OPENGL
 void RendererGeometry::CreateGLVertexObjects(const std::vector<float> &vertices,
                                              RenderDataBody *render_data_body) {
   glGenVertexArrays(1, &render_data_body->vao);
@@ -230,5 +244,5 @@ void RendererGeometry::DeleteGLVertexObjects(RenderDataBody *render_data_body) {
   glDeleteBuffers(1, &render_data_body->vbo);
   glDeleteVertexArrays(1, &render_data_body->vao);
 }
-
+#endif
 }  // namespace m3t

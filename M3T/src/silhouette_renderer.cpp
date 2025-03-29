@@ -37,7 +37,7 @@ bool SilhouetteRendererCore::SetUp(
   image_width_ = image_width;
   image_height_ = image_height;
   image_rendered_ = false;
-
+  #if USE_OPENGL
   // Create shader program
   if (!initial_set_up_ &&
       !CreateShaderProgram(renderer_geometry_ptr_.get(),
@@ -50,11 +50,16 @@ bool SilhouetteRendererCore::SetUp(
   CreateBufferObjects();
   initial_set_up_ = true;
   return true;
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  return false;
+  #endif
 }
 
 bool SilhouetteRendererCore::StartRendering(
     const Eigen::Matrix4f &projection_matrix,
     const Transform3fA &world2camera_pose, IDType id_type) {
+  #if USE_OPENGL
   if (!initial_set_up_) return false;
   renderer_geometry_ptr_->MakeContextCurrent();
   glViewport(0, 0, image_width_, image_height_);
@@ -98,9 +103,14 @@ bool SilhouetteRendererCore::StartRendering(
   silhouette_image_fetched_ = false;
   depth_image_fetched_ = false;
   return true;
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  return false;
+  #endif
 }
 
 bool SilhouetteRendererCore::FetchSilhouetteImage(cv::Mat *silhouette_image) {
+  #if USE_OPENGL
   if (!initial_set_up_ || !image_rendered_) return false;
   if (silhouette_image_fetched_) return true;
   renderer_geometry_ptr_->MakeContextCurrent();
@@ -116,9 +126,14 @@ bool SilhouetteRendererCore::FetchSilhouetteImage(cv::Mat *silhouette_image) {
   renderer_geometry_ptr_->DetachContext();
   silhouette_image_fetched_ = true;
   return true;
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  return false;
+  #endif
 }
 
 bool SilhouetteRendererCore::FetchDepthImage(cv::Mat *depth_image) {
+  #if USE_OPENGL
   if (!initial_set_up_ || !image_rendered_) return false;
   if (depth_image_fetched_) return true;
   renderer_geometry_ptr_->MakeContextCurrent();
@@ -134,11 +149,15 @@ bool SilhouetteRendererCore::FetchDepthImage(cv::Mat *depth_image) {
   renderer_geometry_ptr_->DetachContext();
   depth_image_fetched_ = true;
   return true;
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  return false;
+  #endif
 }
 
 void SilhouetteRendererCore::CreateBufferObjects() {
+  #if USE_OPENGL
   renderer_geometry_ptr_->MakeContextCurrent();
-
   // Initialize renderbuffer bodies_render_data
   glGenRenderbuffers(1, &rbo_silhouette_);
   glBindRenderbuffer(GL_RENDERBUFFER, rbo_silhouette_);
@@ -160,14 +179,21 @@ void SilhouetteRendererCore::CreateBufferObjects() {
                             GL_RENDERBUFFER, rbo_depth_);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   renderer_geometry_ptr_->DetachContext();
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  #endif
 }
 
 void SilhouetteRendererCore::DeleteBufferObjects() {
+  #if USE_OPENGL
   renderer_geometry_ptr_->MakeContextCurrent();
   glDeleteRenderbuffers(1, &rbo_silhouette_);
   glDeleteRenderbuffers(1, &rbo_depth_);
   glDeleteFramebuffers(1, &fbo_);
   renderer_geometry_ptr_->DetachContext();
+  #else
+  throw std::logic_error("USE_OPENGL is FALSE. Function needs to be overriden!");
+  #endif
 }
 
 FullSilhouetteRenderer::FullSilhouetteRenderer(
