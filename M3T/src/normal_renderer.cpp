@@ -58,9 +58,9 @@ bool NormalRendererCore::SetUp(
 }
 
 bool NormalRendererCore::StartRendering(
-  #if USE_OPENGL
     const Eigen::Matrix4f &projection_matrix,
     const Transform3fA &world2camera_pose) {
+#if USE_OPENGL
   if (!initial_set_up_) return false;
   renderer_geometry_ptr_->MakeContextCurrent();
   glViewport(0, 0, image_width_, image_height_);

@@ -105,6 +105,29 @@ target_include_directories(m3t PUBLIC
         $<INSTALL_INTERFACE:include>)
 set_target_properties(m3t PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
+# Define target excluding OpenGL
+# =============================================================================
+add_definitions(-DUSE_OPENGL=FALSE)
+set(LIBRARIES Eigen3::Eigen ${OpenCV_LIBRARIES})
+if (UNIX)
+    list(APPEND LIBRARIES pthread stdc++fs)
+endif ()
+if (USE_AZURE_KINECT)
+    list(APPEND LIBRARIES k4a::k4a)
+endif ()
+if (USE_REALSENSE)
+    list(APPEND LIBRARIES ${realsense2_LIBRARY})
+endif ()
+
+add_library(m3t_UE STATIC ${SOURCES} ${HEADERS})
+target_link_libraries(m3t_UE PUBLIC ${LIBRARIES})
+target_include_directories(m3t_UE PUBLIC  
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+        $<INSTALL_INTERFACE:include>)
+target_include_directories(m3t_UE PUBLIC 
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../third_party>
+        $<INSTALL_INTERFACE:include>)
+set_target_properties(m3t_UE PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
 # Install
 # =============================================================================
