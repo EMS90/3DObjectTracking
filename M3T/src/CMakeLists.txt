@@ -97,6 +97,7 @@ endif ()
 # =============================================================================
 add_library(m3t STATIC ${SOURCES} ${HEADERS})
 target_link_libraries(m3t PUBLIC ${LIBRARIES})
+target_compile_definitions(m3t PUBLIC USE_OPENGL=1)
 target_include_directories(m3t PUBLIC  
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
         $<INSTALL_INTERFACE:include>)
@@ -107,7 +108,6 @@ set_target_properties(m3t PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
 # Define target excluding OpenGL
 # =============================================================================
-add_definitions(-DUSE_OPENGL=FALSE)
 set(LIBRARIES Eigen3::Eigen ${OpenCV_LIBRARIES})
 if (UNIX)
     list(APPEND LIBRARIES pthread stdc++fs)
@@ -121,6 +121,7 @@ endif ()
 
 add_library(m3t_UE STATIC ${SOURCES} ${HEADERS})
 target_link_libraries(m3t_UE PUBLIC ${LIBRARIES})
+target_compile_definitions(m3t_UE PUBLIC USE_OPENGL=0)
 target_include_directories(m3t_UE PUBLIC  
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
         $<INSTALL_INTERFACE:include>)
@@ -128,6 +129,24 @@ target_include_directories(m3t_UE PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../third_party>
         $<INSTALL_INTERFACE:include>)
 set_target_properties(m3t_UE PROPERTIES PUBLIC_HEADER "${HEADERS}")
+
+
+# Define executable for model generation
+# =============================================================================
+add_executable(generate_model generate_model.cpp)
+# Link the executable with the m3t library and required dependencies
+target_link_libraries(generate_model PRIVATE m3t ${LIBRARIES})
+target_compile_definitions(generate_model PRIVATE USE_OPENGL=1)
+# Add include directories for m3t and third-party libraries
+target_include_directories(generate_model PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../third_party>
+    $<INSTALL_INTERFACE:include>)
+# Set the output directory for the generate_model executable
+set_target_properties(generate_model PROPERTIES 
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
+
+
 
 # Install
 # =============================================================================

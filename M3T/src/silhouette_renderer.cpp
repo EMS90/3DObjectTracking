@@ -3,8 +3,10 @@
 
 #include "m3t/silhouette_renderer.h"
 
+#if USE_OPENGL
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#endif
 
 namespace m3t {
 

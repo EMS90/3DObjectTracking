@@ -1,5 +1,4 @@
-// SPDX-License-Identifier: MIT
-// Copyright (c) 2023 Manuel Stoiber, German Aerospace Center (DLR)
+
 
 #include <filesystem/filesystem.h>
 #include <m3t/basic_depth_renderer.h>
@@ -16,79 +15,81 @@
 #include <Eigen/Geometry>
 #include <memory>
 
-// Example script for the detector usage on the data provided in data/sequence
-// with the object triangle
+/// <summary>
+/// Generate a model for a given .obj file. First argument is filepath, second geometry_unit_in_meter (optional), third geometry2body_pose x,y,z (optional)
+/// </summary>
+/// <param name="argc"></param>
+/// <param name="argv"></param>
+/// <returns></returns>
 int main(int argc, char *argv[]) {
-  if (argc == 1) {
-    std::cerr << "Not enough arguments: Provide geometry path";
-    //return -1;
-  }
-  std::filesystem::path geometry_path;
-  //{argv[1]};
-  if (argc > 2 && argc != 5) {
-    std::cerr << "Invalid number of arguments: Provide complete Translation X, Y, Z";
-    return -1;
-  }
-  m3t::Transform3fA geometry2body_pose = m3t::Transform3fA::Identity();
-  if (argc == 4) {  
-    geometry2body_pose = m3t::Transform3fA(Eigen::Translation3f(
-        (float)std::stod(argv[3]), (float)std::stod(argv[4]),
-        (float)std::stod(argv[5])));
-    geometry2body_pose =
-        m3t::Transform3fA(Eigen::Translation3f(0, 0, -0.006));
-  }
-  geometry_path = std::filesystem::path(
-      "C:\\Users\\emanu\\Documents\\Unreal Projects\\HoloLensPlugIn\\Plugins\\M3T4Unreal\\Content\\Meshes\\T-Probe\\TProbe.obj");
-  geometry_path = std::filesystem::path(
-      "C:\\Users\\emanu\\Documents\\Unreal "
-      "Projects\\HoloLensPlugIn\\Plugins\\M3T4Unreal\\Con"
-      "tent\\Meshes\\Triangle\\triangle.obj");
-  // Set up tracker and renderer geometry
-  //auto tracker_ptr{std::make_shared<m3t::Tracker>("tracker")};
-  auto renderer_geometry_ptr{
-      std::make_shared<m3t::RendererGeometry>("renderer_geometry")};
-  // Set up body
-  auto body_ptr{std::make_shared<m3t::Body>("body", geometry_path, 1.0, false,
-                                            true, geometry2body_pose)};
-  renderer_geometry_ptr->AddBody(body_ptr);
-  body_ptr->SetUp(true);
-  renderer_geometry_ptr->SetUp();
-  // Set up region mode
-  auto region_model_ptr{std::make_shared<m3t::RegionModel>(
-      "region_model", body_ptr, geometry_path.replace_extension(".bin"))};
+    std::string geometry_path;
+    float geometry_unit_in_meter = 1.0f;
+    m3t::Transform3fA geometry2body_pose = m3t::Transform3fA::Identity();
 
-  region_model_ptr->SetUp();
+    if (argc == 1) {
+        std::string userInput;
+        //no arguments given, promt for user Input:
+        std::cout << "Generate a M3T-Model for a given.obj file:\n";
+        std::cout << "> ";
+        std::getline(std::cin, userInput);
+        geometry_path = userInput;
+        std::cout << "Geometry unit in meter (optional, default 1.0):\n";
+        std::cout << "> ";
+        std::getline(std::cin, userInput);
+        if(!userInput.empty()) geometry_unit_in_meter = (float)std::stod(userInput);
+        std::cout << "Geometry to Body-Pose[m] (optional, default 0.0 0.0 0.0):\n";
+        std::cout << "> ";
+        std::getline(std::cin, userInput);
+        std::istringstream iss(userInput);
+        float x, y, z;
+        iss >> x >> y >> z;
+        geometry2body_pose = m3t::Transform3fA(Eigen::Translation3f(x, y, z));
+    }
+    else {
+        geometry_path = argv[1];
+    }
 
-  //// Set up region modality
-  //auto region_modality_ptr{std::make_shared<m3t::RegionModality>(
-  //    "region_modality", body_ptr, camera_ptr, region_model_ptr)};
-  //region_modality_ptr->set_visualize_pose_result(true);
-  ///*region_modality_ptr->set_visualize_points_silhouette_rendering_correspondence(
-  //    true);*/
-  //region_modality_ptr->set_visualize_lines_correspondence(true);
-  //region_modality_ptr->set_visualize_gradient_optimization(true);
-  //region_modality_ptr->set_visualize_hessian_optimization(true);
-  //region_modality_ptr->set_visualize_points_silhouette_rendering_correspondence(
-  //    true);
-  //// region_modality_ptr->set_visualize_points_optimization(true);
-  //region_modality_ptr->set_display_visualization(true);
-  //// Set up link
-  //auto link_ptr{std::make_shared<m3t::Link>("link", body_ptr)};
-  //link_ptr->AddModality(region_modality_ptr);
+    if (argc == 3 || argc == 6)
+    {
+        geometry_unit_in_meter = (float)std::stod(argv[2]);
+    }
+    else if (argc == 5)
+    {
+        geometry2body_pose = m3t::Transform3fA(Eigen::Translation3f(
+            (float)std::stod(argv[2]), (float)std::stod(argv[3]),
+            (float)std::stod(argv[4])));
+    }
+    else if (argc == 6)
+    {
+        geometry_unit_in_meter = (float)std::stod(argv[2]);
+        geometry2body_pose = m3t::Transform3fA(Eigen::Translation3f(
+            (float)std::stod(argv[3]), (float)std::stod(argv[4]),
+            (float)std::stod(argv[5])));
+    }
 
-  //// Set up optimizer
-  //auto optimizer_ptr{std::make_shared<m3t::Optimizer>("optimizer", link_ptr)};
-  //tracker_ptr->AddOptimizer(optimizer_ptr);
+    // Remove leading and trailing quotes
+    if (geometry_path.front() == L'\"' && geometry_path.back() == L'\"') {
+        geometry_path = geometry_path.substr(1, geometry_path.size() - 2);
+    }
 
-  //// Set up detector
-  ///*auto detector_ptr{std::make_shared<m3t::ManualDetector>(
-  //    "detector", detector_metafile_path, optimizer_ptr, camera_ptr)};*/
-  //auto detector_ptr{std::make_shared<m3t::StaticDetector>(
-  //    "detector", detector_metafile_path, optimizer_ptr)};
-  //tracker_ptr->AddDetector(detector_ptr);
+    if (!std::filesystem::exists(geometry_path)) {
+        std::wcout << L"The path is invalid or the file does not exist: " << geometry_path.c_str() << std::endl;
+        return -1;
+    }
+    std::filesystem::path path(geometry_path);
 
-  //// Start tracking
-  //if (!tracker_ptr->SetUp()) return -1;
-  //if (!tracker_ptr->RunTrackerProcess(true, true)) return -1;
-  return 0;
+    auto renderer_geometry_ptr{
+        std::make_shared<m3t::RendererGeometry>("renderer_geometry")};
+    // Set up body
+    auto body_ptr{std::make_shared<m3t::Body>("body", path, geometry_unit_in_meter, false,
+                                              true, geometry2body_pose)};
+    renderer_geometry_ptr->AddBody(body_ptr);
+    body_ptr->SetUp(true);
+    renderer_geometry_ptr->SetUp();
+    // Set up region mode
+    auto region_model_ptr{std::make_shared<m3t::RegionModel>(
+        "region_model", body_ptr, path.replace_filename(path.filename().string().append("_region_model")).replace_extension("bin"))};
+
+    region_model_ptr->SetUp();
+    return 0;
 }

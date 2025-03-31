@@ -127,7 +127,6 @@ endif ()
 if (USE_GTEST)
     add_definitions( -DUSE_GTEST=TRUE )
 endif ()
-add_definitions(-DUSE_OPENGL=TRUE)
 
 # Directories
 # =============================================================================
