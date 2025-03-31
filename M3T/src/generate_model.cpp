@@ -77,6 +77,8 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     std::filesystem::path path(geometry_path);
+    std::filesystem::path parentDirectory = path.parent_path(); // Path to the folder
+    std::wstring baseName = path.stem().wstring(); // Base name 
 
     auto renderer_geometry_ptr{
         std::make_shared<m3t::RendererGeometry>("renderer_geometry")};
@@ -86,9 +88,9 @@ int main(int argc, char *argv[]) {
     renderer_geometry_ptr->AddBody(body_ptr);
     body_ptr->SetUp(true);
     renderer_geometry_ptr->SetUp();
-    // Set up region mode
+    // Set up region model
     auto region_model_ptr{std::make_shared<m3t::RegionModel>(
-        "region_model", body_ptr, path.replace_filename(path.filename().string().append("_region_model")).replace_extension("bin"))};
+        "region_model", body_ptr, parentDirectory / (baseName + L"_region_model.bin"))};
 
     region_model_ptr->SetUp();
     return 0;
