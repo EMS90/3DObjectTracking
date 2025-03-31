@@ -141,7 +141,7 @@ namespace m3t {
  * images in visualization.
  */
 class RegionModality : public Modality {
- private:
+ protected:
   static constexpr int kMaxNOcclusionStrides = 5;
   static constexpr int kNRegionStride = 5;
   static constexpr float kRegionOffset = 2.0f;
@@ -372,6 +372,7 @@ class RegionModality : public Modality {
   // Helper methods for visualization
   void ShowAndSaveImage(const std::string &title, int save_index,
                         const cv::Mat &image) const;
+private:
   void VisualizePointsColorImage(const std::string &title,
                                  int save_index) const;
   void VisualizePointsDepthImage(const std::string &title,
@@ -383,11 +384,12 @@ class RegionModality : public Modality {
   void VisualizePointsHistogramImage(const std::string &title,
                                      int save_index) const;
   void VisualizeLines(const std::string &title, int save_index) const;
+ protected:
   void DrawPoints(const cv::Vec3b &color_point, cv::Mat *image) const;
   void DrawDepthPoints(const cv::Vec3b &color_point, cv::Mat *image) const;
   void DrawFocusedPoints(const std::shared_ptr<FocusedRenderer> &renderer_ptr,
                          const cv::Vec3b &color_point, cv::Mat *image) const;
-  void DrawLines(const cv::Vec3b &color_line,
+  virtual void DrawLines(const cv::Vec3b &color_line,
                  const cv::Vec3b &color_high_probability, cv::Mat *image) const;
   void DrawProbabilityImage(const cv::Vec3b &color_b,
                             cv::Mat *probability_image) const;
