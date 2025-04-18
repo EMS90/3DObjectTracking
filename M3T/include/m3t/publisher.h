@@ -34,7 +34,7 @@ class Publisher {
   Publisher(const std::string &name);
   Publisher(const std::string &name,
             const std::filesystem::path &metafile_path);
-
+  virtual ~Publisher() = default;
   // Variables
   std::string name_{};
   std::filesystem::path metafile_path_{};

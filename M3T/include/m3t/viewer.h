@@ -58,7 +58,7 @@ class Viewer {
   // Constructor
   Viewer(const std::string &name);
   Viewer(const std::string &name, const std::filesystem::path &metafile_path);
-
+  virtual ~Viewer() = default;
   // Helper methods
   void DisplayAndSaveImage(int save_index, const cv::Mat &image);
 

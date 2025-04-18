@@ -97,7 +97,7 @@ class Renderer {
   Renderer(const std::string &name, const std::filesystem::path &metafile_path,
            const std::shared_ptr<RendererGeometry> &renderer_geometry_ptr,
            const std::shared_ptr<Camera> &camera_ptr);
-
+  virtual ~Renderer() = default;
   // Helper Methods
   bool InitParametersFromCamera();
 

@@ -47,7 +47,7 @@ class Detector {
   // Constructor
   Detector(const std::string &name, bool reset_joint_poses);
   Detector(const std::string &name, const std::filesystem::path &metafile_path);
-
+  virtual ~Detector() = default;
   // Helper methods
   void UpdatePoses(const Transform3fA &link2world_pose,
                    const std::shared_ptr<Optimizer> &optimizer_ptr);

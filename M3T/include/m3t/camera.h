@@ -64,7 +64,7 @@ class Camera {
   // Constructor
   Camera(const std::string &name);
   Camera(const std::string &name, const std::filesystem::path &metafile_path);
-
+  virtual ~Camera() = default;
   // Helper methods
   void SaveImageIfDesired();
 

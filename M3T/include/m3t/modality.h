@@ -123,7 +123,7 @@ class Modality {
   Modality(const std::string &name, const std::shared_ptr<Body> &body_ptr);
   Modality(const std::string &name, const std::filesystem::path &metafile_path,
            const std::shared_ptr<Body> &body_ptr);
-
+  virtual ~Modality() = default;
   // Helper methods for visualization
   void VisualizePose();
   void VisualizeGradient();

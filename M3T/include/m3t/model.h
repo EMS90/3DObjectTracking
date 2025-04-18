@@ -107,7 +107,7 @@ class Model {
         float stride_depth_offset, bool use_random_seed, int image_size);
   Model(const std::string &name, const std::filesystem::path &metafile_path,
         const std::shared_ptr<Body> &body_ptr);
-
+  virtual ~Model() = default;
   // Helper methods for view generation
   static std::vector<std::shared_ptr<RendererGeometry>>
   GenerateSetUpRendererGeometries(int n_renderer_geometries);
