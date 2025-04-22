@@ -12,36 +12,40 @@ option(USE_REALSENSE "Use RealSense D435" ON)
 option(USE_GTEST "Use gtest" ON)
 option(USE_XFEATURES2D "Use OpenCV xfeatures2d" OFF)
 
-
 # Libraries
 # =============================================================================
 
 # Build static on Windows
 if (WIN32)
-    set(GLEW_STATIC true)
-    set(OpenCV_STATIC true)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -MTd")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -MT")
 endif ()
 
 # Used libraries
 find_package(Eigen3 3.3.2 REQUIRED)
 if (WIN32)
-find_package(GLEW REQUIRED)
-if (UNIX)
-    set(OpenGL_GL_PREFERENCE LEGACY)
-endif ()
-find_package(OpenGL REQUIRED)
-find_package(glfw3 3.1.2 REQUIRED)
+    set(GLEW_STATIC true)
+    find_package(GLEW REQUIRED)
+    find_package(OpenGL REQUIRED)
+    find_package(glfw3 3.1.2 REQUIRED)
 endif ()
 
-set(OpenCV_COMPONENTS core imgproc highgui imgcodecs calib3d features2d)
-if(USE_XFEATURES2D)
-    add_definitions( -DUSE_XFEATURES2D=TRUE )
-    set(OpenCV_COMPONENTS ${OpenCV_COMPONENTS} xfeatures2d)
-endif()
-find_package(OpenCV 4.3.0 REQUIRED COMPONENTS ${OpenCV_COMPONENTS} OPTIONAL_COMPONENTS cudafeatures2d)
+# Manually specify OpenCV include and library directories as we want to use the Unreal OpenCV-Plugin
+include_directories(${OpenCV_INCLUDE_DIR})
+link_directories(${OpenCV_LIB_DIR})
+
+# Dynamically set the OpenCV library based on the build type
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(OpenCV_LIBRARIES ${OpenCV_LIB_NAME_DEBUG})
+else ()
+    set(OpenCV_LIBRARIES ${OpenCV_LIB_NAME_RELEASE})
+endif ()
+
+message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
+message(STATUS "CMAKE_CXX_FLAGS_RELEASE: ${CMAKE_CXX_FLAGS_RELEASE}")
+message(STATUS "OpenCV_INCLUDE_DIR: ${OpenCV_INCLUDE_DIR}")
+message(STATUS "OpenCV_LIB_DIR: ${OpenCV_LIB_DIR}")
+message(STATUS "OpenCV_LIBRARIES: ${OpenCV_LIBRARIES}")
+message(STATUS "OpenCV_STATIC: ${OpenCV_STATIC}")
 
 if (USE_AZURE_KINECT)
     find_package(k4a 1.3.0 REQUIRED)
