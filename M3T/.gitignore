@@ -13,3 +13,11 @@ doc/html
 !CMakeLists.txt
 !readme.md
 !.clang-format
+!*.bat
+# Prebuild libraries
+!/lib/
+# Model Generation executable
+!/generate_model/
+!/generate_model/Release/
+!/generate_model/Release/*.exe
+!/generate_model/Release/*.dll
