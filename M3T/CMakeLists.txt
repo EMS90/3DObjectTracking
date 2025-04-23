@@ -11,10 +11,11 @@ option(USE_AZURE_KINECT "Use Azure Kinect" ON)
 option(USE_REALSENSE "Use RealSense D435" ON)
 option(USE_GTEST "Use gtest" ON)
 option(USE_XFEATURES2D "Use OpenCV xfeatures2d" OFF)
+option(BUILD_UE_ONLY "only build library for UE -exclude OpenGL" OFF)
 
 # Libraries
 # =============================================================================
-
+message(STATUS "BUILD_UE_ONLY: '${BUILD_UE_ONLY}'")
 # Build static on Windows
 if (WIN32)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -22,7 +23,7 @@ endif ()
 
 # Used libraries
 find_package(Eigen3 3.3.2 REQUIRED)
-if (WIN32)
+if (NOT BUILD_UE_ONLY)
     set(GLEW_STATIC true)
     find_package(GLEW REQUIRED)
     find_package(OpenGL REQUIRED)

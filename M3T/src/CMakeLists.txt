@@ -95,7 +95,7 @@ endif ()
 
 # Define target
 # =============================================================================
-if (WIN32)
+if (NOT BUILD_UE_ONLY)
     add_library(m3t STATIC ${SOURCES} ${HEADERS})
     target_link_libraries(m3t PUBLIC ${LIBRARIES})
     target_compile_definitions(m3t PUBLIC USE_OPENGL=1)
@@ -134,7 +134,7 @@ set_target_properties(m3t_UE PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
 # Define executable for model generation
 # =============================================================================
-if (WIN32)
+if (NOT BUILD_UE_ONLY)
     add_executable(generate_model generate_model.cpp)
     # Link the executable with the m3t library and required dependencies
     target_link_libraries(generate_model PRIVATE m3t ${LIBRARIES})
@@ -164,12 +164,14 @@ endif()
 
 # Install
 # =============================================================================
-install(TARGETS m3t
-        EXPORT m3t_target
-        LIBRARY DESTINATION lib
-        PUBLIC_HEADER DESTINATION include/m3t)
-install(DIRECTORY ../third_party/
-        DESTINATION include)
-install(EXPORT m3t_target 
-        FILE M3TConfig.cmake
-        DESTINATION lib/cmake/M3T)
+if (NOT BUILD_UE_ONLY)
+    install(TARGETS m3t
+            EXPORT m3t_target
+            LIBRARY DESTINATION lib
+            PUBLIC_HEADER DESTINATION include/m3t)
+    install(DIRECTORY ../third_party/
+            DESTINATION include)
+    install(EXPORT m3t_target 
+            FILE M3TConfig.cmake
+            DESTINATION lib/cmake/M3T)
+endif ()
