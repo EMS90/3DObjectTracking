@@ -7,8 +7,8 @@ project(M3T)
 
 # Options
 # =============================================================================
-option(USE_AZURE_KINECT "Use Azure Kinect" ON)
-option(USE_REALSENSE "Use RealSense D435" ON)
+option(USE_AZURE_KINECT "Use Azure Kinect" OFF)
+option(USE_REALSENSE "Use RealSense D435" OFF)
 option(USE_GTEST "Use gtest" ON)
 option(USE_XFEATURES2D "Use OpenCV xfeatures2d" OFF)
 option(BUILD_UE_ONLY "only build library for UE -exclude OpenGL" OFF)
