@@ -47,14 +47,14 @@ cmake^
  -DUSE_AZURE_KINECT=OFF^
  -DUSE_REALSENSE=OFF^
  -DUSE_GTEST=OFF^
- -DCMAKE_CXX_FLAGS_RELEASE="/MD" 
+ -DCMAKE_CXX_FLAGS_RELEASE="/MD /Zi"^
  -DCMAKE_CXX_FLAGS_DEBUG="/MDd"
 
 echo Building x64 Release build...
 cmake --build . --config Release --target INSTALL -- /m:4
 
-echo Building x64 Debug build...
-:: cmake --build . --config Debug --target INSTALL -- /m:4
+:: echo Building x64 Debug build... Currently not possible due to erros.
+:: cmake --build . --config Debug --target m3t -- /m:4 
 
 :: x64/..
 popd
@@ -71,7 +71,7 @@ IF NOT EXIST %lib_path%Win64 (
 	md %lib_path%\Win64
 )
 
-move /y x64\src\Release\m3t*.lib %lib_path%\Win64
+move /y x64\src\Release\m3t*.* %lib_path%\Win64
 
 echo Cleaning up...
 
