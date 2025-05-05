@@ -53,7 +53,7 @@ cmake^
 echo Building x64 Release build...
 cmake --build . --config Release --target INSTALL -- /m:4
 
-:: echo Building x64 Debug build... Currently not possible due to erros.
+:: echo Building x64 Debug build... Currently not possible due to erros (see https://github.com/EMS90/M3T4Unreal/issues/21#issuecomment-2848691495).
 :: cmake --build . --config Debug --target m3t -- /m:4 
 
 :: x64/..

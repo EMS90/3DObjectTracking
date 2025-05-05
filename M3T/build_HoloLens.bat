@@ -42,14 +42,14 @@ cmake^
  -DUSE_AZURE_KINECT=OFF^
  -DUSE_REALSENSE=OFF^
  -DUSE_GTEST=OFF^
- -DCMAKE_CXX_FLAGS_RELEASE="/MD"^
+ -DCMAKE_CXX_FLAGS_RELEASE="/MD /Zi /O2 /Ob2 /DNDEBUG"^
  -DCMAKE_CXX_FLAGS_DEBUG="/MDd"^
  -DBUILD_UE_ONLY="ON"
 
 echo Building HoloLens Release build...
 cmake --build . --config Release --target m3t_UE -- /m:4
 
-echo Building HoloLens Debug build...
+:: echo Building HoloLens Debug build...
 :: cmake --build . --config Debug --target INSTALL -- /m:4
 
 :: HoloLens/..
