@@ -6,6 +6,22 @@
 #include <opencv2/core/eigen.hpp>
 
 namespace m3t {
+const std::string &getBuildInformation() {
+  static const std::string info =
+      "\n General Configuration for M3T ===============================\n"
+#ifdef _OPENMP
+      " OpenMP: Enabled\n"
+#else
+      " OpenMP: Disabled\n"
+#endif
+#ifdef UE_INSIGHTS
+      " UE Insights: Enabled\n";
+#else
+      " UE Insights: Disabled\n";
+#endif
+
+  return info;
+}
 
 bool Equivalent(const std::filesystem::path &path1,
                 const std::filesystem::path &path2) {

@@ -14,6 +14,8 @@
 #include <vector>
 
 namespace m3t {
+// Function to get build information
+const std::string &getBuildInformation();
 
 // Commonly used types
 typedef Eigen::Transform<float, 3, Eigen::Affine> Transform3fA;
