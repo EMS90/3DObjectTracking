@@ -50,8 +50,8 @@ NormalColorViewer::NormalColorViewer(
     float opacity)
     : ColorViewer{name, color_camera_ptr},
       renderer_geometry_ptr_{renderer_geometry_ptr},
-      opacity_{opacity},
-      renderer_{"renderer", renderer_geometry_ptr, color_camera_ptr} {}
+      renderer_{"renderer", renderer_geometry_ptr, color_camera_ptr},
+      opacity_{opacity} {}
 
 NormalColorViewer::NormalColorViewer(
     const std::string &name, const std::filesystem::path &metafile_path,
@@ -145,8 +145,8 @@ NormalDepthViewer::NormalDepthViewer(
     float min_depth, float max_depth, float opacity)
     : DepthViewer{name, depth_camera_ptr, min_depth, max_depth},
       renderer_geometry_ptr_{renderer_geometry_ptr},
-      opacity_{opacity},
-      renderer_{"renderer", renderer_geometry_ptr, depth_camera_ptr} {}
+      renderer_{"renderer", renderer_geometry_ptr, depth_camera_ptr},
+      opacity_{opacity} {}
 
 NormalDepthViewer::NormalDepthViewer(
     const std::string &name, const std::filesystem::path &metafile_path,

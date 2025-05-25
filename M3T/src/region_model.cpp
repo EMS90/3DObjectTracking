@@ -538,7 +538,7 @@ bool RegionModel::GeneratePointData(
     data_point->normal_f_body = camera2body_pose.rotation() * normal_f_camera;
 
     // Calculate depth offset
-    float pixel_to_meter = center_f_camera(2) / main_renderer.intrinsics().fu;
+    pixel_to_meter = center_f_camera(2) / main_renderer.intrinsics().fu;
     CalculateDepthOffsets(main_renderer, center, pixel_to_meter,
                           &data_point->depth_offsets);
 

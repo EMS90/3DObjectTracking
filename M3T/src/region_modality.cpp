@@ -1127,7 +1127,7 @@ void RegionModality::AddLinePixelColorsToTempHistograms(
     float u = center_u - normal(0) * unconsidered_line_length_ + 0.5f;
     float v = center_v - normal(1) * unconsidered_line_length_ + 0.5f;
     int i_u, i_v;
-    for (int i = 0; i < projected_length_f; ++i) {
+    for (int j = 0; j < projected_length_f; ++j) {
       i_u = int(u);
       i_v = int(v);
       if (i_u < 0 || i_u > image_width_minus_1_ || i_v < 0 ||
@@ -1141,7 +1141,7 @@ void RegionModality::AddLinePixelColorsToTempHistograms(
     // Iterate over background pixels
     u = center_u + normal(0) * unconsidered_line_length_ + 0.5f;
     v = center_v + normal(1) * unconsidered_line_length_ + 0.5f;
-    for (int i = 0; i < projected_length_b; ++i) {
+    for (int j = 0; j < projected_length_b; ++j) {
       i_u = int(u);
       i_v = int(v);
       if (i_u < 0 || i_u > image_width_minus_1_ || i_v < 0 ||

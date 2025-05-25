@@ -377,9 +377,9 @@ void Model::CalculateDepthOffsets(
   // Accumulate minimum values for circular regions and calculate depth offset
   float depth_center = renderer.Depth(center);
   (*depth_offsets)[0] = depth_center - renderer.Depth(min_values[0]);
-  for (size_t i = 1; i < kMaxNDepthOffsets; ++i) {
-    min_values[i] = std::min(min_values[i], min_values[i - 1]);
-    (*depth_offsets)[i] = depth_center - renderer.Depth(min_values[i]);
+  for (size_t j = 1; j < kMaxNDepthOffsets; ++j) {
+    min_values[j] = std::min(min_values[j], min_values[j - 1]);
+    (*depth_offsets)[j] = depth_center - renderer.Depth(min_values[j]);
   }
 }
 
