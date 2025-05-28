@@ -95,40 +95,17 @@ endif ()
 
 # Define target
 # =============================================================================
-add_library(m3t STATIC ${SOURCES} ${HEADERS})
-target_link_libraries(m3t PUBLIC ${LIBRARIES})
-target_compile_definitions(m3t PUBLIC USE_OPENGL=1)
-target_include_directories(m3t PUBLIC  
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
-        $<INSTALL_INTERFACE:include>)
-target_include_directories(m3t PUBLIC 
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../third_party>
-        $<INSTALL_INTERFACE:include>)
-set_target_properties(m3t PROPERTIES PUBLIC_HEADER "${HEADERS}")
-
-# Define target excluding OpenGL
-# =============================================================================
-set(LIBRARIES Eigen3::Eigen ${OpenCV_LIBRARIES})
-if (UNIX)
-    list(APPEND LIBRARIES pthread stdc++fs)
+    add_library(m3t STATIC ${SOURCES} ${HEADERS})
+    target_link_libraries(m3t PUBLIC ${LIBRARIES})
+    target_compile_definitions(m3t PUBLIC USE_OPENGL=1)
+    target_include_directories(m3t PUBLIC  
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+            $<INSTALL_INTERFACE:include>)
+    target_include_directories(m3t PUBLIC 
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../third_party>
+            $<INSTALL_INTERFACE:include>)
+    set_target_properties(m3t PROPERTIES PUBLIC_HEADER "${HEADERS}")
 endif ()
-if (USE_AZURE_KINECT)
-    list(APPEND LIBRARIES k4a::k4a)
-endif ()
-if (USE_REALSENSE)
-    list(APPEND LIBRARIES ${realsense2_LIBRARY})
-endif ()
-
-add_library(m3t_UE STATIC ${SOURCES} ${HEADERS})
-target_link_libraries(m3t_UE PUBLIC ${LIBRARIES})
-target_compile_definitions(m3t_UE PUBLIC USE_OPENGL=0)
-target_include_directories(m3t_UE PUBLIC  
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
-        $<INSTALL_INTERFACE:include>)
-target_include_directories(m3t_UE PUBLIC 
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../third_party>
-        $<INSTALL_INTERFACE:include>)
-set_target_properties(m3t_UE PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
 
 # Define executable for model generation
@@ -146,6 +123,18 @@ target_include_directories(generate_model PRIVATE
 set_target_properties(generate_model PROPERTIES 
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
+    # List of required DLLs
+    set(OpenCV_DLLS
+        "${OpenCV_DLL_DIR}/${OpenCV_LIB_NAME_RELEASE}.dll"
+    )
+
+    # Copy DLLs to the runtime output directory
+    add_custom_command(TARGET generate_model POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${OpenCV_DLLS}
+        $<TARGET_FILE_DIR:generate_model>
+    )
+endif()
 
 
 # Install
