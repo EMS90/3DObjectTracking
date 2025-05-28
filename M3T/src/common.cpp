@@ -14,7 +14,7 @@ const std::string &getBuildInformation() {
 #else
       " OpenMP: Disabled\n"
 #endif
-#if (#defined USE_OPENGL) && (USE_OPENGL == 1)
+#if (defined USE_OPENGL) && (USE_OPENGL == 1)
       " OPENGL: Enabled\n";
 #else
       " OPENGL: Disabled\n";
