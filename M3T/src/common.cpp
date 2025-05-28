@@ -28,6 +28,7 @@ bool Equivalent(const std::filesystem::path &path1,
   try {
     return std::filesystem::equivalent(path1, path2);
   } catch (std::filesystem::filesystem_error const &e) {
+    std::cerr << "Filesystem error: " << e.what() << std::endl;
     return false;
   }
 }
@@ -36,7 +37,7 @@ void ReadValueFromTxt(std::ifstream &ifs, bool *value) {
   std::string parsed;
   std::getline(ifs, parsed);
   std::getline(ifs, parsed, ',');
-  *value = stoi(parsed);
+  *value = (stoi(parsed) != 0);
   std::getline(ifs, parsed);
 }
 

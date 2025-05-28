@@ -110,18 +110,19 @@ endif ()
 
 # Define executable for model generation
 # =============================================================================
-add_executable(generate_model generate_model.cpp)
-# Link the executable with the m3t library and required dependencies
-target_link_libraries(generate_model PRIVATE m3t ${LIBRARIES})
-target_compile_definitions(generate_model PRIVATE USE_OPENGL=1)
-# Add include directories for m3t and third-party libraries
-target_include_directories(generate_model PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../third_party>
-    $<INSTALL_INTERFACE:include>)
-# Set the output directory for the generate_model executable
-set_target_properties(generate_model PROPERTIES 
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
+if (NOT BUILD_UE_ONLY)
+    add_executable(generate_model generate_model.cpp)
+    # Link the executable with the m3t library and required dependencies
+    target_link_libraries(generate_model PRIVATE m3t ${LIBRARIES})
+    target_compile_definitions(generate_model PRIVATE USE_OPENGL=1)
+    # Add include directories for m3t and third-party libraries
+    target_include_directories(generate_model PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../third_party>
+        $<INSTALL_INTERFACE:include>)
+    # Set the output directory for the generate_model executable
+    set_target_properties(generate_model PROPERTIES 
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/generate_model")
 
     # List of required DLLs
     set(OpenCV_DLLS
@@ -139,12 +140,14 @@ endif()
 
 # Install
 # =============================================================================
-install(TARGETS m3t
-        EXPORT m3t_target
-        LIBRARY DESTINATION lib
-        PUBLIC_HEADER DESTINATION include/m3t)
-install(DIRECTORY ../third_party/
-        DESTINATION include)
-install(EXPORT m3t_target 
-        FILE M3TConfig.cmake
-        DESTINATION lib/cmake/M3T)
+if (NOT BUILD_UE_ONLY)
+    install(TARGETS m3t
+            EXPORT m3t_target
+            LIBRARY DESTINATION lib
+            PUBLIC_HEADER DESTINATION include/m3t)
+    install(DIRECTORY ../third_party/
+            DESTINATION include)
+    install(EXPORT m3t_target 
+            FILE M3TConfig.cmake
+            DESTINATION lib/cmake/M3T)
+endif ()

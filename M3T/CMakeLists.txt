@@ -11,18 +11,14 @@ option(USE_AZURE_KINECT "Use Azure Kinect" OFF)
 option(USE_REALSENSE "Use RealSense D435" OFF)
 option(USE_GTEST "Use gtest" ON)
 option(USE_XFEATURES2D "Use OpenCV xfeatures2d" OFF)
-
-
+option(BUILD_UE_ONLY "only build library for UE -exclude OpenGL" OFF)
+option(USE_OPENMP "Use OpenMP" ON)
 # Libraries
 # =============================================================================
-
+message(STATUS "BUILD_UE_ONLY: '${BUILD_UE_ONLY}'")
 # Build static on Windows
 if (WIN32)
-    set(GLEW_STATIC true)
-    set(OpenCV_STATIC true)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -MTd")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -MT")
 endif ()
 
 # Used libraries
@@ -63,7 +59,7 @@ if (USE_REALSENSE)
 endif ()
 
 find_package(OpenMP)
-if (OPENMP_FOUND)
+if (OPENMP_FOUND AND USE_OPENMP)
     if (WIN32)
         set(CMAKE_CXX_FLAGS_RELEASE
                 "${CMAKE_CXX_FLAGS_RELEASE} -openmp:experimental")
