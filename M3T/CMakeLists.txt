@@ -12,7 +12,7 @@ option(USE_REALSENSE "Use RealSense D435" OFF)
 option(USE_GTEST "Use gtest" ON)
 option(USE_XFEATURES2D "Use OpenCV xfeatures2d" OFF)
 option(BUILD_UE_ONLY "only build library for UE -exclude OpenGL" OFF)
-
+option(USE_OPENMP "Use OpenMP" ON)
 # Libraries
 # =============================================================================
 message(STATUS "BUILD_UE_ONLY: '${BUILD_UE_ONLY}'")
@@ -47,6 +47,7 @@ message(STATUS "OpenCV_INCLUDE_DIR: ${OpenCV_INCLUDE_DIR}")
 message(STATUS "OpenCV_LIB_DIR: ${OpenCV_LIB_DIR}")
 message(STATUS "OpenCV_LIBRARIES: ${OpenCV_LIBRARIES}")
 message(STATUS "OpenCV_STATIC: ${OpenCV_STATIC}")
+message(STATUS "USE_OPENMP: ${USE_OPENMP}")
 
 if (USE_AZURE_KINECT)
     find_package(k4a 1.3.0 REQUIRED)
@@ -57,7 +58,7 @@ if (USE_REALSENSE)
 endif ()
 
 find_package(OpenMP)
-if (OPENMP_FOUND)
+if (OPENMP_FOUND AND USE_OPENMP)
     if (WIN32)
         set(CMAKE_CXX_FLAGS_RELEASE
                 "${CMAKE_CXX_FLAGS_RELEASE} -openmp:experimental")

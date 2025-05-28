@@ -14,10 +14,10 @@ const std::string &getBuildInformation() {
 #else
       " OpenMP: Disabled\n"
 #endif
-#ifdef UE_INSIGHTS
-      " UE Insights: Enabled\n";
+#ifdef USE_OPENGL
+      " OPENGL: Enabled\n";
 #else
-      " UE Insights: Disabled\n";
+      " OPENGL: Disabled\n";
 #endif
 
   return info;
