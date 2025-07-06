@@ -118,6 +118,8 @@ class Modality {
   const std::filesystem::path &save_directory() const;
   const std::string &save_image_type() const;
 
+  float last_residual_error() { return last_residual_error_; };
+
  protected:
   // Constructor
   Modality(const std::string &name, const std::shared_ptr<Body> &body_ptr);
@@ -152,6 +154,8 @@ class Modality {
   bool imshow_optimization_ = false;
   bool imshow_result_ = false;
   bool set_up_ = false;
+
+  float last_residual_error_ = -1.0f;
 };
 
 }  // namespace m3t

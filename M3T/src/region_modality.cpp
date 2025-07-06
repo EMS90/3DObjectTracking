@@ -491,6 +491,8 @@ bool RegionModality::CalculateGradientAndHessian(int iteration,
   gradient_.setZero();
   hessian_.setZero();
 
+  float sum_squared_error = 0.0f;
+  int n = 0;
   // Iterate over correspondence lines
   for (auto &data_line : data_lines_) {
     // Calculate point coordinates in camera frame
@@ -545,6 +547,8 @@ bool RegionModality::CalculateGradientAndHessian(int iteration,
     float weight = min_expected_variance_ /
                    (data_line.normal_component_to_scale *
                     data_line.normal_component_to_scale * variance_);
+    sum_squared_error += data_line.measured_variance;
+    n++;
 
     // Calculate gradient and hessian
     gradient_ +=
@@ -553,6 +557,8 @@ bool RegionModality::CalculateGradientAndHessian(int iteration,
         (weight / data_line.measured_variance) * ddelta_cs_dtheta.transpose() *
         ddelta_cs_dtheta;
   }
+  last_residual_error_ =
+      n > 0 ? std::sqrt(sum_squared_error / n) : 0.0f;
   hessian_ = hessian_.selfadjointView<Eigen::Lower>();
   return true;
 }
