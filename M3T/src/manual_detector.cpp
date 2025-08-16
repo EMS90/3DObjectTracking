@@ -91,7 +91,7 @@ ManualDetector::ManualDetector(
     const std::shared_ptr<m3t::ColorCamera>& color_camera_ptr,
     const std::vector<cv::Point3f>& reference_points,
     const std::filesystem::path& detector_image_path, bool reset_joint_poses)
-    : Detector{name, reset_joint_poses_},
+    : Detector{name, reset_joint_poses},
       optimizer_ptr_{optimizer_ptr},
       color_camera_ptr_{color_camera_ptr},
       reference_points_{reference_points},

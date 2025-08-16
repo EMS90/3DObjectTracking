@@ -849,7 +849,7 @@ bool DepthModality::FindCorrespondence(
 
   // Calculate limits for depth value
   float min_depth_value =
-      std::min(0.0f, (data_point.depth - considered_distance) / depth_scale_);
+      std::max(0.0f, (data_point.depth - considered_distance) / depth_scale_);
   float max_depth_value =
       (data_point.depth + considered_distance) / depth_scale_;
 
