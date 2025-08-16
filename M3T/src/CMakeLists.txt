@@ -105,7 +105,7 @@ endif ()
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../third_party>
             $<INSTALL_INTERFACE:include>)
     set_target_properties(m3t PROPERTIES PUBLIC_HEADER "${HEADERS}")
-endif ()
+#endif ()
 
 
 # Define executable for model generation

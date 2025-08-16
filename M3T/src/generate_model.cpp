@@ -8,6 +8,7 @@
 #include <m3t/manual_detector.h>
 #include <m3t/normal_viewer.h>
 #include <m3t/region_modality.h>
+#include <m3t/depth_modality.h>
 #include <m3t/renderer_geometry.h>
 #include <m3t/static_detector.h>
 #include <m3t/tracker.h>
@@ -91,7 +92,11 @@ int main(int argc, char *argv[]) {
     // Set up region model
     auto region_model_ptr{std::make_shared<m3t::RegionModel>(
         "region_model", body_ptr, parentDirectory / (baseName + L"_region_model.bin"))};
-
     region_model_ptr->SetUp();
+    
+    // Set up depth model
+    auto depth_model_ptr{std::make_shared<m3t::DepthModel>(
+        "depth_model", body_ptr, parentDirectory / (baseName + L"_depth_model.bin"))};
+    depth_model_ptr->SetUp();
     return 0;
 }
