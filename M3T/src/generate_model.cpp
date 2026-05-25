@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
         std::cout << "> ";
         std::getline(std::cin, userInput);
         std::istringstream iss(userInput);
-        float x, y, z;
+        float x = 0.0f, y = 0.0f, z = 0.0f;  // Default
         iss >> x >> y >> z;
         geometry2body_pose = m3t::Transform3fA(Eigen::Translation3f(x, y, z));
     }
