@@ -1,5 +1,3 @@
-
-
 #include <filesystem/filesystem.h>
 #include <m3t/basic_depth_renderer.h>
 #include <m3t/body.h>
@@ -44,7 +42,15 @@ int main(int argc, char *argv[]) {
         std::istringstream iss(userInput);
         float x = 0.0f, y = 0.0f, z = 0.0f;  // Default
         iss >> x >> y >> z;
-        geometry2body_pose = m3t::Transform3fA(Eigen::Translation3f(x, y, z));
+        // Unreal specific Transform
+        Eigen::Matrix3f M;
+        M << 0, 0, 1,
+             0, -1, 0,
+             1, 0, 0;
+        Eigen::Transform<float, 3, Eigen::Affine> t;
+        t.linear() = M;
+        t.translation() = Eigen::Vector3f(y, -z, x);
+        geometry2body_pose = m3t::Transform3fA(t);
     }
     else {
         geometry_path = argv[1];
@@ -81,6 +87,47 @@ int main(int argc, char *argv[]) {
     std::filesystem::path parentDirectory = path.parent_path(); // Path to the folder
     std::wstring baseName = path.stem().wstring(); // Base name 
 
+    // Warn and optionally delete existing region/depth model files before processing.
+    {
+      std::filesystem::path region_model_file =
+          parentDirectory / (baseName + L"_region_model.bin");
+      std::filesystem::path depth_model_file =
+          parentDirectory / (baseName + L"_depth_model.bin");
+
+      std::vector<std::filesystem::path> existing;
+      if (std::filesystem::exists(region_model_file))
+        existing.push_back(region_model_file);
+      if (std::filesystem::exists(depth_model_file))
+        existing.push_back(depth_model_file);
+
+      if (!existing.empty()) {
+        std::cout << "Warning: existing Modelfiles found:\n";
+        for (const auto &p : existing) {
+          std::cout << "  " << p.string() << "\n";
+        }
+        std::cout << "Continue and overwrite? (j/n): ";
+        std::string answer;
+        std::getline(std::cin, answer);
+        if (!(answer == "j" || answer == "J" || answer == "y" ||
+              answer == "Y" || answer == "yes" || answer == "Yes")) {
+          std::cout << "Canceled by user. Processing stoped.\n";
+          return 0;
+        }
+        for (const auto &p : existing) {
+          try {
+            if (std::filesystem::remove(p)) {
+              std::cout << "Deleted: " << p.string() << "\n";
+            } else {
+              std::cerr << "Could not delete: " << p.string() << "\n";
+            }
+          } catch (const std::exception &e) {
+            std::cerr << "Error deleting " << p.string() << ": " << e.what()
+                      << "\n";
+          }
+        }
+      }
+    }
+    std::cout << "Starting generating model...\n";
     auto renderer_geometry_ptr{
         std::make_shared<m3t::RendererGeometry>("renderer_geometry")};
     // Set up body
